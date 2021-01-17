@@ -1,0 +1,81 @@
+version: "3"
+
+services:
+  mysql:
+    build: ./build/mysql
+    volumes:
+      - ${VOLUME_PATH}:/var/lib/mysql
+    ports:
+      - "6603:3306"
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASS}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASS}
+  nginx:
+    build: ./build/nginx
+    image: nginx:latest
+    ports:
+      - 8880:80
+      - 8443:443
+      - 8250:5050
+      - 8240:4040
+    volumes:
+      - ${LOGS_PATH}/nginx/:/var/log/nginx
+      - ${SRC_PATH}:${DEST_PATH}
+      - ./data/nginx/sites-available:/etc/nginx/sites-available
+    links:
+      - caayouth:caayouth
+      - caayouth_admin:caayouth_admin
+      - printer:printer
+      - printer_admin:printer_admin
+  caayouth:
+    container_name: caayouth
+    image: tomcat:9.0
+    ports:
+      - 8280:8080
+      - 8009:8009
+    volumes:
+      - ./webapps/Caayouth:/usr/local/tomcat/webapps/site
+      - ./conf/caayouth.xml:/usr/local/tomcat/conf/server.xml
+      - ${LOGS_PATH}/caayouth/:/usr/local/tomcat/logs
+    links:
+      - mysql:mysql
+  printer:
+    container_name: printer
+    image: tomcat:9.0
+    ports:
+      - 8380:8080
+      - 8309:8009
+    volumes:
+      - ./webapps/printer:/usr/local/tomcat/webapps/site
+      - ./conf/printer.xml:/usr/local/tomcat/conf/server.xml
+      - ${LOGS_PATH}/printer/:/usr/local/tomcat/logs
+    links:
+      - mysql:mysql
+  caayouth_admin:
+    container_name: caayouth_admin
+    image: tomcat:9.0
+    ports:
+      - 8480:8080
+      - 8409:8009
+    volumes:
+      - ./webapps/Caayouth_admin:/usr/local/tomcat/webapps/site
+      - ./conf/caayouth_admin.xml:/usr/local/tomcat/conf/server.xml
+      - ${LOGS_PATH}/caayouth_admin/:/usr/local/tomcat/logs
+    links:
+      - mysql:mysql
+  printer_admin:
+    container_name: printer_admin
+    image: tomcat:9.0
+    ports:
+      - 8580:8080
+      - 8509:8009
+    volumes:
+      - ./webapps/printer_admin:/usr/local/tomcat/webapps/site
+      - ./conf/printer_admin.xml:/usr/local/tomcat/conf/server.xml
+      - ${LOGS_PATH}/printer_admin/:/usr/local/tomcat/logs
+    links:
+      - mysql:mysql
+
+

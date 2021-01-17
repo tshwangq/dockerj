@@ -1,0 +1,9 @@
+/data/mysql
+*~
+*\#
+/logs
+*.gz
+/data/nginx/sites-available/
+*.sql
+*.org
+webapps
