@@ -24,6 +24,7 @@ services:
       - ${LOGS_PATH}/nginx/:/var/log/nginx
       - ${SRC_PATH}:${DEST_PATH}
       - ./data/nginx/sites-available:/etc/nginx/sites-available
+      - ./data/nginx/upstream.conf:/etc/nginx/conf.d/upstream.conf
     links:
       - caayouth:caayouth
       - caayouth_admin:caayouth_admin
